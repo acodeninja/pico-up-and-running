@@ -1,0 +1,89 @@
+#!/usr/bin/env python
+
+from termcolor import cprint
+from typing import Callable
+import os
+import re
+import subprocess
+import sys
+
+
+def command_wipe(arguments=None):
+    cprint('wiping all code currently stored on device', 'red')
+
+    def get_command_list(root=''):
+        wipe_command_list = []
+
+        output = subprocess.check_output(f"mpremote ls {root}", shell=True)
+
+        for line in output.decode('utf-8').split(os.linesep):
+            if not line or line.startswith('ls'):
+                continue
+            line_path = re.search(r'\d+\s(.+)', line.strip()).group(1)
+            if line_path.endswith('/'):
+                wipe_command_list += get_command_list(f'{root}{line_path}')
+            wipe_command_list.append(f'mpremote rm {root}{line_path}')
+
+        return wipe_command_list
+
+    for wipe_command in get_command_list():
+        os.system(wipe_command)
+
+    os.system('mpremote reset')
+
+
+def command_push(arguments=None):
+    cprint('pushing local code to device', 'blue')
+
+    os.system(f'mpremote mkdir app')
+    for root, dirs, files in os.walk("app", topdown=True):
+        for name in files:
+            remote_name = os.path.join(root, name).replace('\\', '/')
+            os.system(f'mpremote cp {remote_name} :{remote_name}')
+        for name in dirs:
+            remote_name = os.path.join(root, name).replace('\\', '/')
+            os.system(f'mpremote mkdir {remote_name}')
+
+    os.system('mpremote cp main.py :main.py')
+    os.system('mpremote reset')
+
+
+commands = {
+    'push': {
+        'description': 'push local application code to a connected pico',
+        'function': command_push,
+    },
+    'wipe': {
+        'description': 'remove all files from a connected pico',
+        'function': command_wipe
+    },
+}
+
+
+def command_help(arguments=None):
+    cprint('python pico commands', 'blue')
+    print()
+    for name in commands.keys():
+        details = commands.get(name)
+        cprint(f'{name.ljust(7)} {details.get("description")}')
+    print()
+
+
+def process_command(command=None, arguments=None):
+    if command == 'help':
+        return command_help()
+
+    if command in commands.keys():
+        cprint(f'running {command}')
+        command_function: Callable = commands.get(command).get('function')
+        command_function(arguments)
+
+
+try:
+    args = sys.argv[1:]
+    process_command(args[0], args[1:])
+
+except IndexError:
+    cprint('No command given', 'red')
+    print()
+    command_help()
