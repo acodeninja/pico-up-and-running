@@ -1,5 +1,6 @@
 *.mpy
 build/
+dist/
 *.uf2
 settings.py
 *.egg-info/
