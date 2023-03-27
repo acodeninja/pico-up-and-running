@@ -16,6 +16,17 @@ class CommandInit(CommandBase):
         except FileExistsError:
             cprint('README file already exists', 'red')
 
+        cprint('creating a .gitignore', 'blue')
+        try:
+            f = open(".gitignore", "x")
+            f.write("\n".join([
+                '*.mpy',
+                'build/',
+            ]))
+            f.close()
+        except FileExistsError:
+            cprint('.gitignore file already exists', 'red')
+
         cprint('creating settings file', 'blue')
         try:
             f = open("settings.py", "x")
