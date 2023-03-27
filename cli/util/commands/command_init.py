@@ -8,6 +8,14 @@ class CommandInit(CommandBase):
 
     @staticmethod
     def execute(arguments=None):
+        cprint('creating a README file', 'blue')
+        try:
+            f = open("README.md", "x")
+            f.write("# My Pico Project\n")
+            f.close()
+        except FileExistsError:
+            cprint('README file already exists', 'red')
+
         cprint('creating settings file', 'blue')
         try:
             f = open("settings.py", "x")
