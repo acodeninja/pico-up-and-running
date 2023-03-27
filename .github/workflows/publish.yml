@@ -9,7 +9,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - run: python -m build
+      - run: |
+          pip install build 
+          python -m build
       - uses: pypa/gh-action-pypi-publish@v1.8.3
         with:
           password: ${{ secrets.PYPI_API_TOKEN }}
