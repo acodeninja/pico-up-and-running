@@ -2,3 +2,4 @@
 build/
 *.uf2
 settings.py
+*.egg-info/

@@ -3,7 +3,7 @@ import os
 import re
 import subprocess
 
-from util.commands.base import CommandBase
+from .base import CommandBase
 
 
 class CommandWipe(CommandBase):

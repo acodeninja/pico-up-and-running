@@ -3,7 +3,7 @@ import shutil
 
 from termcolor import cprint
 
-from util.commands.base import CommandBase
+from .base import CommandBase
 
 
 class CommandBuild(CommandBase):

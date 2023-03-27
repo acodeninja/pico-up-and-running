@@ -1,10 +1,9 @@
+import os
 import time
 from termcolor import cprint
-
 from .base import CommandBase
 from .command_build import CommandBuild
 from .command_wipe import CommandWipe
-import os
 
 
 class CommandPush(CommandBase):

@@ -20,7 +20,7 @@ class CommandHelp:
                 cprint(f'command {name} does not exist', 'red')
                 CommandHelp.execute()
         else:
-            cprint('python pico', 'blue')
+            cprint('python pico-up', 'blue')
             print()
             for name in available_commands.keys():
                 command = available_commands.get(name)
