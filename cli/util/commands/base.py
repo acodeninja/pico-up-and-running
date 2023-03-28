@@ -3,5 +3,5 @@ class CommandBase:
     options = []
 
     @staticmethod
-    def execute():
+    def execute(configuration, arguments=None):
         raise NotImplemented

@@ -6,7 +6,7 @@ class CommandHelp:
     description = 'show general help or specific command help'
 
     @staticmethod
-    def execute(arguments=None):
+    def execute(configuration, arguments=None):
         if arguments:
             name = arguments[0]
             try:
@@ -18,7 +18,7 @@ class CommandHelp:
                     cprint("\n".join(command.options))
             except AttributeError:
                 cprint(f'command {name} does not exist', 'red')
-                CommandHelp.execute()
+                CommandHelp.execute(configuration, arguments)
         else:
             cprint('python pico-up', 'blue')
             print()

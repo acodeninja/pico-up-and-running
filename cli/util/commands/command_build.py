@@ -10,7 +10,7 @@ class CommandBuild(CommandBase):
     description = 'minify and attempt to compile pico application to bytecodes'
 
     @staticmethod
-    def execute(arguments=None):
+    def execute(configuration, arguments=None):
         cprint('copying codebase to build', 'blue')
         try:
             shutil.rmtree('build')

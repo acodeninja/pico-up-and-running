@@ -1,3 +1,4 @@
+import configparser
 from .util import commands, CommandHelp
 from termcolor import cprint
 import sys
@@ -14,8 +15,25 @@ def main():
 
 
 def process_command(command=None, arguments=None):
+    configuration = load_configuration()
     if command in commands.available_commands.keys():
         cprint(f'running {command}')
-        commands.available_commands.get(command).execute(arguments)
+        commands.available_commands.get(command).execute(configuration, arguments)
     else:
-        CommandHelp.execute(arguments)
+        CommandHelp.execute(configuration, arguments)
+
+
+def load_configuration():
+    try:
+        pico_config = configparser.ConfigParser()
+        pico_config.read('.pico-up.ini')
+        try:
+            test = pico_config['device']['address']
+        except KeyError:
+            cprint('config found, but missing sections', 'red')
+            quit(101)
+
+        return pico_config
+    except FileNotFoundError:
+        cprint('no configuration file found', 'red')
+        quit(100)

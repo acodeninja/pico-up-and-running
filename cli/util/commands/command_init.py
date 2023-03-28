@@ -7,7 +7,7 @@ class CommandInit(CommandBase):
     description = 'initialise a python pico project in the current directory'
 
     @staticmethod
-    def execute(arguments=None):
+    def execute(configuration, arguments=None):
         cprint('creating a README file', 'blue')
         try:
             f = open("README.md", "x")
@@ -55,3 +55,14 @@ class CommandInit(CommandBase):
             f.close()
         except FileExistsError:
             cprint('app module file already exists', 'red')
+
+        cprint('creating a .pico-up.ini file', 'blue')
+        try:
+            f = open(".pico-up.ini", "x")
+            f.write("\n".join([
+                '[device]',
+                "address = 'CHANGE_ME'"
+            ]))
+            f.close()
+        except FileExistsError:
+            cprint('.pico-up.ini file already exists', 'red')

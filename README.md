@@ -22,7 +22,23 @@ The init command will create the following directory structure
 ├── app
 │   └── __init__.py
 ├── .gitignore
+|-- .pico-up.ini
 ├── main.py
 ├── README.md
 └── settings.py
 ```
+
+#### Setting the right device
+
+Use `mpremote connect list` to view a list of connected serial devices.
+
+```
+/dev/ttyACM0 xxxxxxxxxxxxx xxxx:cccc MicroPython Board in FS mode
+/dev/ttyS1 None 0000:0000 None None
+```
+
+Choose the one in the list that says `MicroPython Board in FS mode`,
+copying the first row of information, `/dev/ttyACM0` in this case.
+
+Replace the line `address = 'CHANGE_ME'` with `address = '/dev/ttyACM0'` 
+in the `.pico-up.ini` file.
