@@ -2,6 +2,7 @@ import configparser
 from .util import commands, CommandHelp
 from termcolor import cprint
 import sys
+from .util.errors import ArgumentError
 
 
 def main():
@@ -20,10 +21,13 @@ def process_command(command=None, arguments=None):
     else:
         configuration = load_configuration()
 
-    if command in commands.available_commands.keys():
-        commands.available_commands.get(command).execute(configuration, arguments)
-    else:
-        CommandHelp.execute(configuration, arguments)
+    try:
+        if command in commands.available_commands.keys():
+            commands.available_commands.get(command).execute(configuration, arguments)
+        else:
+            CommandHelp.execute(configuration, arguments)
+    except ArgumentError:
+        CommandHelp.execute(configuration, [command])
 
 
 def load_configuration():
