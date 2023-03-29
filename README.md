@@ -8,6 +8,7 @@ A template repository with some scripts and shared functionality to get up and r
 python pico-up
 
 build   minify and attempt to compile pico application to bytecodes
+free    show the current free ram and rom space, requires a soft-reset
 init    initialise a python pico project in the current directory
 image   prepare an image for use with the pico
 push    push local application code to a connected pico
