@@ -15,7 +15,11 @@ def main():
 
 
 def process_command(command=None, arguments=None):
-    configuration = load_configuration()
+    if command == 'init':
+        configuration = {}
+    else:
+        configuration = load_configuration()
+
     if command in commands.available_commands.keys():
         commands.available_commands.get(command).execute(configuration, arguments)
     else:
