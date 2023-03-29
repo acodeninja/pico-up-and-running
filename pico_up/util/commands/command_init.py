@@ -61,7 +61,10 @@ class CommandInit(CommandBase):
             f = open(".pico-up.ini", "x")
             f.write("\n".join([
                 '[device]',
-                "address = 'CHANGE_ME'"
+                'address = \'CHANGE_ME\'',
+                '[code]',
+                'ignores =',
+                '    .jpg',
             ]))
             f.close()
         except FileExistsError:

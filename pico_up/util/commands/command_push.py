@@ -26,11 +26,19 @@ class CommandPush(CommandBase):
         time.sleep(2.0)
         cprint('pushing local code to device', 'blue')
 
+        ignores = []
+        try:
+            ignores = configuration['code']['ignores'].split('\n')
+            ignores = list(filter(lambda x: x != '', ignores))
+        except KeyError:
+            pass
+
         os.system(f'mpremote connect {device_address} mkdir app')
         for root, dirs, files in os.walk("app", topdown=True):
             for name in files:
                 remote_name = os.path.join(root, name).replace('\\', '/')
-                os.system(f'mpremote connect {device_address} cp {remote_name} :{remote_name}')
+                if not name.endswith(tuple(ignores)):
+                    os.system(f'mpremote connect {device_address} cp {remote_name} :{remote_name}')
             for name in dirs:
                 remote_name = os.path.join(root, name).replace('\\', '/')
                 os.system(f'mpremote connect {device_address} mkdir {remote_name}')
