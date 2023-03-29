@@ -11,13 +11,12 @@ def main():
     except IndexError:
         cprint('No command given', 'red')
         print()
-        CommandHelp.execute()
+        CommandHelp.execute({})
 
 
 def process_command(command=None, arguments=None):
     configuration = load_configuration()
     if command in commands.available_commands.keys():
-        cprint(f'running {command}')
         commands.available_commands.get(command).execute(configuration, arguments)
     else:
         CommandHelp.execute(configuration, arguments)
