@@ -1,7 +1,6 @@
 from termcolor import cprint
 from PIL import Image
 import numpy
-import sys
 import pathlib
 from .base import CommandBase
 from ..errors import ArgumentError
@@ -15,7 +14,8 @@ import umsgpack
 
 class CommandPrepareImage(CommandBase):
     description = 'prepare a 128x128 sprite image for use with the pico'
-    options = ['python [filename]: convert image to a python file with pixels and palette',
+    options = ['python [filename] <sprite size>: convert image to a python file with pixels and palette, ',
+               '                                 optionally reduce each sprites size',
                'rgb332 [filename]: convert image to an rgb332 file']
 
     @staticmethod
@@ -23,6 +23,15 @@ class CommandPrepareImage(CommandBase):
         try:
             image_type = arguments[0]
             filename = pathlib.Path(arguments[1])
+            sprite_size = 8
+            try:
+                sprite_size = int(arguments[2])
+                if sprite_size > 8:
+                    raise ArgumentError('a sprite cannot be enlarged, only shrunk')
+            except IndexError:
+                pass
+            except TypeError:
+                pass
         except IndexError:
             cprint('type or filename were not set', 'red')
             raise ArgumentError
@@ -48,6 +57,7 @@ class CommandPrepareImage(CommandBase):
                 a = pb[:, :, 3]  # Discarded
                 color = r | g | b
                 output = color.astype("uint8").flatten().tobytes()
+                w, h = image.size
                 print(f"Converted: {w}x{h} {len(output)} bytes")
 
                 with open(output_filename, "wb") as f:
@@ -60,13 +70,17 @@ class CommandPrepareImage(CommandBase):
         if image_type == 'python':
             try:
                 output_filename = filename.with_suffix(".bin")
-                converted_image = image.convert('P', palette=Image.ADAPTIVE, colors=16)
+                converted_image = image.convert('P', palette=Image.ADAPTIVE, colors=32)
                 palette = [list(color) for color in list(converted_image.palette.colors.keys())]
                 sprite = numpy.array(converted_image).tolist()
+
+                final_size = sprite_size * 16
+                if final_size != 128:
+                    sprite = _resize_sprite_sheet(sprite, 8, sprite_size)
+
                 output = {'p': palette, 's': sprite}
                 output = umsgpack.dumps(output)
-
-                print(f"Converted: {w}x{h} {len(output)} bytes")
+                print(f"Converted: {len(sprite)}x{len(sprite[0])} {len(output)} bytes")
 
                 with open(output_filename, "wb") as f:
                     f.write(output)
@@ -74,3 +88,37 @@ class CommandPrepareImage(CommandBase):
                 print(f"Written to: {output_filename}")
             except Exception as e:
                 print(e)
+
+
+def _resize_sprite_sheet(input_sprite_sheet, current_sprite_size, new_sprite_size):
+    sprite_mid_point = int(new_sprite_size / 2)
+    sprites_per_row = int(len(input_sprite_sheet) / current_sprite_size)
+    new_sprite_sheet = [[0] * new_sprite_size * sprites_per_row for _ in range(new_sprite_size * sprites_per_row)]
+    new_sprite_sheet = numpy.array(new_sprite_sheet)
+    input_sprite_sheet = numpy.array(input_sprite_sheet)
+
+    sprites = []
+    for x in range(sprites_per_row):
+        for y in range(sprites_per_row):
+            sprites.append(
+                input_sprite_sheet[
+                    current_sprite_size * x:current_sprite_size * x + current_sprite_size,
+                    current_sprite_size * y:current_sprite_size * y + current_sprite_size
+                ].tolist()
+            )
+
+    for sprite in sprites:
+        del sprite[sprite_mid_point]
+        for row in sprite:
+            del row[sprite_mid_point]
+
+    current_sprite = 0
+    for x in range(sprites_per_row):
+        for y in range(sprites_per_row):
+            new_sprite_sheet[
+                x * new_sprite_size:x * new_sprite_size + new_sprite_size,
+                y * new_sprite_size:y * new_sprite_size + new_sprite_size
+            ] = sprites[current_sprite]
+            current_sprite += 1
+
+    return new_sprite_sheet.tolist()
