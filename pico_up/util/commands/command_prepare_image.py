@@ -13,7 +13,8 @@ from ..errors import ArgumentError
 
 class CommandPrepareImage(CommandBase):
     description = 'prepare an image for use with the pico'
-    options = ['[type] [filename]: type is one of rgb332 or python and filename is a jpeg']
+    options = ['python [filename]: convert image to a python file with pixels and palette',
+               'rgb332 [filename]: convert image to an rgb332 file']
 
     @staticmethod
     def execute(configuration, arguments=None):
