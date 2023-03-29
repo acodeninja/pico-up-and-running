@@ -10,7 +10,7 @@ python pico-up
 build   minify and attempt to compile pico application to bytecodes
 free    show the current free ram and rom space, requires a soft-reset
 init    initialise a python pico project in the current directory
-image   prepare an image for use with the pico
+image   prepare a 128x128 sprite image for use with the pico
 push    push local application code to a connected pico
 wipe    remove all files from a connected pico
 version show the version of pico-up

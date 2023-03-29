@@ -5,6 +5,8 @@ import sys
 import pathlib
 from .base import CommandBase
 from ..errors import ArgumentError
+import umsgpack
+
 
 # RGB332 code taken from
 # https://github.com/pimoroni/pimoroni-pico/blob/main/micropython/modules/picographics/spritesheet-to-rgb332.py
@@ -12,7 +14,7 @@ from ..errors import ArgumentError
 
 
 class CommandPrepareImage(CommandBase):
-    description = 'prepare an image for use with the pico'
+    description = 'prepare a 128x128 sprite image for use with the pico'
     options = ['python [filename]: convert image to a python file with pixels and palette',
                'rgb332 [filename]: convert image to an rgb332 file']
 
@@ -31,52 +33,44 @@ class CommandPrepareImage(CommandBase):
             cprint('type is not valid', 'red')
             raise ArgumentError
 
+        image = Image.open(filename)
+        w, h = image.size
+        if w != 128 and h != 128:
+            raise ArgumentError("Image must be 128x128 pixels")
+
         if image_type == 'rgb332':
-            image = Image.open(filename)
-            output_filename = filename.with_suffix(".rgb332")
-            w, h = image.size
-            pb = numpy.array(image.convert('RGBA')).astype('uint16')
-            r = (pb[:, :, 0] & 0b11100000) >> 0
-            g = (pb[:, :, 1] & 0b11100000) >> 3
-            b = (pb[:, :, 2] & 0b11000000) >> 6
-            a = pb[:, :, 3]  # Discarded
-            color = r | g | b
-            output = color.astype("uint8").flatten().tobytes()
-            print(f"Converted: {w}x{h} {len(output)} bytes")
+            try:
+                output_filename = filename.with_suffix(".rgb332")
+                pb = numpy.array(image.convert('RGBA')).astype('uint16')
+                r = (pb[:, :, 0] & 0b11100000) >> 0
+                g = (pb[:, :, 1] & 0b11100000) >> 3
+                b = (pb[:, :, 2] & 0b11000000) >> 6
+                a = pb[:, :, 3]  # Discarded
+                color = r | g | b
+                output = color.astype("uint8").flatten().tobytes()
+                print(f"Converted: {w}x{h} {len(output)} bytes")
 
-            with open(output_filename, "wb") as f:
-                f.write(output)
+                with open(output_filename, "wb") as f:
+                    f.write(output)
 
-            print(f"Written to: {output_filename}")
+                print(f"Written to: {output_filename}")
+            except Exception as e:
+                print(e)
 
         if image_type == 'python':
-            image = Image.open(filename)
-            output_filename = filename.with_suffix(".py")
-            w, h = image.size
-            sprite = numpy.array(image.convert('RGB')).tolist()
-            flattened_sprite = [item for sublist in sprite for item in sublist]
+            try:
+                output_filename = filename.with_suffix(".bin")
+                converted_image = image.convert('P', palette=Image.ADAPTIVE, colors=16)
+                palette = [list(color) for color in list(converted_image.palette.colors.keys())]
+                sprite = numpy.array(converted_image).tolist()
+                output = {'p': palette, 's': sprite}
+                output = umsgpack.dumps(output)
 
-            palette_set = set()
-            for item in flattened_sprite:
-                palette_set.add(f'{item[0]},{item[1]},{item[2]}')
+                print(f"Converted: {w}x{h} {len(output)} bytes")
 
-            palette = []
-            for item in list(palette_set):
-                rgb = []
-                for c in item.split(','):
-                    rgb.append(int(c))
-                palette.append(rgb)
+                with open(output_filename, "wb") as f:
+                    f.write(output)
 
-            palette_sprite = [[None] * 7 for i in range(7)]
-            for y, row in enumerate(sprite):
-                for x, column in enumerate(row):
-                    palette_sprite[x][y] = palette.index(column)
-
-            output = f"s = {palette_sprite}\np = {palette}\n"
-
-            print(f"Converted: {w}x{h} {len(output)} bytes")
-
-            with open(output_filename, "w") as f:
-                f.write(output)
-
-            print(f"Written to: {output_filename}")
+                print(f"Written to: {output_filename}")
+            except Exception as e:
+                print(e)

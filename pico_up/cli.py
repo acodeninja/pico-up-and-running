@@ -26,7 +26,8 @@ def process_command(command=None, arguments=None):
             commands.available_commands.get(command).execute(configuration, arguments)
         else:
             CommandHelp.execute(configuration, arguments)
-    except ArgumentError:
+    except ArgumentError as e:
+        cprint(f'error: {e}', 'red')
         CommandHelp.execute(configuration, [command])
 
 
