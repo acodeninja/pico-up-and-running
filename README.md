@@ -9,20 +9,22 @@ python pico-up
 
 build   minify and attempt to compile pico application to bytecodes
 init    initialise a python pico project in the current directory
+image   prepare an image for use with the pico
 push    push local application code to a connected pico
 wipe    remove all files from a connected pico
+version show the version of pico-up
 ```
 
 ### `init`
 
-The init command will create the following directory structure
+The init command will create the following directory structure.
 
 ```
 .
 ├── app
 │   └── __init__.py
 ├── .gitignore
-|-- .pico-up.ini
+├── .pico-up.ini
 ├── main.py
 ├── README.md
 └── settings.py
