@@ -49,6 +49,8 @@ class CommandPush(CommandBase):
         except KeyError:
             modules_to_push = []
 
+        modules_to_push.append('pico_up_modules.free_commands')
+
         for mod in modules_to_push:
             module_file_path = getattr(__import__(mod), mod.split('.')[-1]).__file__
             module_file_path = os.path.relpath(module_file_path)
