@@ -91,7 +91,6 @@ class CommandPrepareImage(CommandBase):
 
 
 def _resize_sprite_sheet(input_sprite_sheet, current_sprite_size, new_sprite_size):
-    sprite_mid_point = int(new_sprite_size / 2)
     sprites_per_row = int(len(input_sprite_sheet) / current_sprite_size)
     new_sprite_sheet = [[0] * new_sprite_size * sprites_per_row for _ in range(new_sprite_size * sprites_per_row)]
     new_sprite_sheet = numpy.array(new_sprite_sheet)
@@ -103,14 +102,16 @@ def _resize_sprite_sheet(input_sprite_sheet, current_sprite_size, new_sprite_siz
             sprites.append(
                 input_sprite_sheet[
                     current_sprite_size * x:current_sprite_size * x + current_sprite_size,
-                    current_sprite_size * y:current_sprite_size * y + current_sprite_size
+                    current_sprite_size * y:current_sprite_size * y + current_sprite_size,
                 ].tolist()
             )
 
-    for sprite in sprites:
-        del sprite[sprite_mid_point]
-        for row in sprite:
-            del row[sprite_mid_point]
+    for reduction in range(current_sprite_size - new_sprite_size):
+        sprite_mid_point = int((current_sprite_size - reduction - 1) / 2)
+        for sprite in sprites:
+            del sprite[sprite_mid_point]
+            for row in sprite:
+                del row[sprite_mid_point]
 
     current_sprite = 0
     for x in range(sprites_per_row):
