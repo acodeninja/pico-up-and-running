@@ -3,6 +3,20 @@ from termcolor import cprint
 from .base import CommandBase
 
 
+__BASE_CONFIG_FILE__ = '''
+[device]
+address = '/dev/ttyACM0'
+
+[push]
+ignores =
+        .jpg
+        .rgb332
+        .bin
+
+modules =
+        pico_up_modules.msgpack_loads
+'''
+
 class CommandInit(CommandBase):
     description = 'initialise a python pico project in the current directory'
 
@@ -59,13 +73,7 @@ class CommandInit(CommandBase):
         cprint('creating a .pico-up.ini file', 'blue')
         try:
             f = open(".pico-up.ini", "x")
-            f.write("\n".join([
-                '[device]',
-                'address = \'CHANGE_ME\'',
-                '[code]',
-                'ignores =',
-                '    .jpg',
-            ]))
+            f.write(__BASE_CONFIG_FILE__)
             f.close()
         except FileExistsError:
             cprint('.pico-up.ini file already exists', 'red')
