@@ -78,7 +78,7 @@ class CommandPrepareImage(CommandBase):
                 if final_size != 128:
                     sprite = _resize_sprite_sheet(sprite, 8, sprite_size)
 
-                output = {'p': palette, 's': sprite}
+                output = {'p': palette, 's': sprite, 'd': sprite_size}
                 output = umsgpack.dumps(output)
                 print(f"Converted: {len(sprite)}x{len(sprite[0])} {len(output)} bytes")
 
