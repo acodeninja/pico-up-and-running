@@ -16,6 +16,24 @@ wipe    remove all files from a connected pico
 version show the version of pico-up
 ```
 
+## The `.pico-up.ini` file
+
+This file configures how you want to communicate with and deploy code to the pico.
+
+```ini
+[device]
+address = '/dev/ttyACM0'
+
+[push]
+ignores =
+        .jpg
+        .rgb332
+        .bin
+
+modules =
+        pico_up_modules.msgpack_loads
+```
+
 ### `init`
 
 The init command will create the following directory structure.
