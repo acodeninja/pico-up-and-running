@@ -23,12 +23,12 @@ class CommandPush(CommandBase):
 
         CommandWipe.execute(configuration, arguments)
         cprint('waiting for device', 'blue')
-        time.sleep(2.0)
+        time.sleep(1.0)
         cprint('pushing local code to device', 'blue')
 
         ignores = []
         try:
-            ignores = configuration['code']['ignores'].split('\n')
+            ignores = configuration['push']['ignores'].split('\n')
             ignores = list(filter(lambda x: x != '', ignores))
         except KeyError:
             pass
@@ -43,6 +43,18 @@ class CommandPush(CommandBase):
                 remote_name = os.path.join(root, name).replace('\\', '/')
                 os.system(f'mpremote connect {device_address} mkdir {remote_name}')
 
-        os.system(f'mpremote connect {device_address} cp main.py :main.py')
+        try:
+            modules_to_push = configuration['push']['modules'].split('\n')
+            modules_to_push = list(filter(lambda x: x != '', modules_to_push))
+        except KeyError:
+            modules_to_push = []
+
+        for mod in modules_to_push:
+            module_file_path = getattr(__import__(mod), mod.split('.')[-1]).__file__
+            module_file_path = os.path.relpath(module_file_path)
+            module_file_name = os.path.basename(module_file_path)
+            os.system(f'mpremote connect {device_address} cp {module_file_path} :{module_file_name}')
+
         os.system(f'mpremote connect {device_address} cp settings.py :settings.py')
+        os.system(f'mpremote connect {device_address} cp main.py :main.py')
         os.system(f'mpremote connect {device_address} reset')
