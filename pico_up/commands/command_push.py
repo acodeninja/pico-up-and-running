@@ -47,7 +47,6 @@ class CommandPush(CommandBase):
             minify_python(staging_directory)
             compile_python(staging_directory)
 
-        os.system(f'tree {staging_directory}')
         files_to_upload = get_application_files(search_in=staging_directory)
         directories_to_upload = get_folders_to_create_for_files(files_to_upload)
 
