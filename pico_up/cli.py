@@ -2,6 +2,7 @@ import configparser
 from .util import commands, CommandHelp
 from termcolor import cprint
 import sys
+from .util.configuration import load_configuration
 from .util.errors import ArgumentError
 
 
@@ -29,19 +30,3 @@ def process_command(command=None, arguments=None):
     except ArgumentError as e:
         cprint(f'error: {e}', 'red')
         CommandHelp.execute(configuration, [command])
-
-
-def load_configuration():
-    try:
-        pico_config = configparser.ConfigParser()
-        pico_config.read('.pico-up.ini')
-        try:
-            test = pico_config['device']['address']
-        except KeyError:
-            cprint('config found, but missing sections', 'red')
-            quit(101)
-
-        return pico_config
-    except FileNotFoundError:
-        cprint('no configuration file found', 'red')
-        quit(100)
