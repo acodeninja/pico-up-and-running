@@ -17,8 +17,8 @@ class CommandHelp:
                     cprint('optional arguments:', 'blue')
                     cprint("\n".join(command.options))
             except AttributeError:
-                cprint(f'command {name} does not exist', 'red')
-                CommandHelp.execute(configuration, arguments)
+                cprint(f'command "{name}" does not exist', 'red')
+                CommandHelp.execute(configuration, [])
         else:
             cprint('python pico-up', 'blue')
             print()

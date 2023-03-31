@@ -1,7 +1,8 @@
 import configparser
-from .util import commands, CommandHelp
+import pico_up.commands
 from termcolor import cprint
 import sys
+from .command_help import CommandHelp
 from .util.configuration import load_configuration
 from .util.errors import ArgumentError
 
@@ -23,10 +24,10 @@ def process_command(command=None, arguments=None):
         configuration = load_configuration()
 
     try:
-        if command in commands.available_commands.keys():
-            commands.available_commands.get(command).execute(configuration, arguments)
+        if command in pico_up.commands.available_commands.keys():
+            pico_up.commands.available_commands.get(command).execute(configuration, arguments)
         else:
             CommandHelp.execute(configuration, arguments)
     except ArgumentError as e:
-        cprint(f'error: {e}', 'red')
+        cprint(f'error: {e}\n', 'red')
         CommandHelp.execute(configuration, [command])
