@@ -7,7 +7,6 @@ A template repository with some scripts and shared functionality to get up and r
 ```
 python pico-up
 
-build   minify and attempt to compile pico application to bytecodes
 free    show the current free ram and rom space, requires a soft-reset
 init    initialise a python pico project in the current directory
 image   prepare a 128x128 sprite image for use with the pico
@@ -22,44 +21,16 @@ This file configures how you want to communicate with and deploy code to the pic
 
 ```ini
 [device]
-address = '/dev/ttyACM0'
+address = '/dev/ttyACM0' # The device id, name or path from mpremote devs
 
 [push]
-ignores =
+ignores = # File extensions to ignore when pushing files to the device
         .jpg
         .rgb332
         .bin
 
-modules =
+modules = # Code modules to push to the device in addition to your code
         pico_up_modules.msgpack_loads
 ```
 
-### `init`
-
-The init command will create the following directory structure.
-
-```
-.
-├── app
-│   └── __init__.py
-├── .gitignore
-├── .pico-up.ini
-├── main.py
-├── README.md
-└── settings.py
-```
-
-#### Setting the right device
-
-Use `mpremote connect list` to view a list of connected serial devices.
-
-```
-/dev/ttyACM0 xxxxxxxxxxxxx xxxx:cccc MicroPython Board in FS mode
-/dev/ttyS1 None 0000:0000 None None
-```
-
-Choose the one in the list that says `MicroPython Board in FS mode`,
-copying the first row of information, `/dev/ttyACM0` in this case.
-
-Replace the line `address = 'CHANGE_ME'` with `address = '/dev/ttyACM0'` 
-in the `.pico-up.ini` file.
+For more information on available commands and their effects see [COMMANDS](docs/COMMANDS.md).
