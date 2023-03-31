@@ -2,7 +2,6 @@ import os
 from termcolor import cprint
 from .base import CommandBase
 
-
 __BASE_CONFIG_FILE__ = '''
 [device]
 address = '/dev/ttyACM0'
@@ -16,6 +15,7 @@ ignores =
 modules =
         pico_up_modules.msgpack_loads
 '''
+
 
 class CommandInit(CommandBase):
     description = 'initialise a python pico project in the current directory'

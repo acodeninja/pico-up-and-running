@@ -9,4 +9,7 @@ class CommandFree(CommandBase):
     @staticmethod
     def execute(configuration, arguments=None):
         cprint(f'getting free ram and rom space', 'blue')
-        os.system(f'mpremote resume exec "import free_commands; free_commands.rom_space(); free_commands.ram_space();"')
+        cprint('this will terminate your application, press enter to proceed', 'yellow')
+        input()
+        os.system(f'mpremote resume exec "from app.mods.free_commands import rom_space, ram_space; '
+                  f'rom_space(); ram_space();"')

@@ -3,7 +3,7 @@ from PIL import Image
 import numpy
 import pathlib
 from .base import CommandBase
-from ..errors import ArgumentError
+from pico_up.util.errors import ArgumentError
 import umsgpack
 
 
@@ -33,14 +33,12 @@ class CommandPrepareImage(CommandBase):
             except TypeError:
                 pass
         except IndexError:
-            cprint('type or filename were not set', 'red')
-            raise ArgumentError
+            raise ArgumentError('Image type or filename were not set')
 
         try:
             ['rgb332', 'python'].index(image_type)
         except ValueError:
-            cprint('type is not valid', 'red')
-            raise ArgumentError
+            raise ArgumentError('Image type is not valid')
 
         image = Image.open(filename)
         w, h = image.size
